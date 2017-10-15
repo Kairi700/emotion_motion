@@ -18,7 +18,7 @@ void loop()
   // reads the value of the potentiometer (value between 0 and 1023)
   val = analogRead(input_pin);
   // scale it to use it with the servo (value between 0 and 180)
-  val = map(val, 0, 4095, 0, 179);
+  val = map(val, 0, 1023, 0, 179);
   // sets the servo position according to the scaled value
   myservo.write(val);
   // waits for the servo to get there
