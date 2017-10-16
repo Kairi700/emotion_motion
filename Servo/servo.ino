@@ -7,11 +7,19 @@ int input_pin = A0;
 // Pin to control the servo
 const int servo_pin = D0;
 // variable to read the value from the analog pin
+
+const int ledRedPin = D1;
+const int ledYellowPin = D2;
+
 int val;
 void setup()
 {
   // attaches the servo on pin 9 to the servo object
   myservo.attach(servo_pin);
+  pinMode(ledRedPin, OUTPUT);
+  pinMode(ledYellowPin, OUTPUT);
+
+  Serial.begin(9600);
 }
 void loop()
 {
@@ -23,4 +31,11 @@ void loop()
   myservo.write(val);
   // waits for the servo to get there
   delay(15);
+
+  digitalWrite(ledRedPin, HIGH);
+  digitalWrite(ledYellowPin, LOW);
+  delay(1000);
+  digitalWrite(ledYellowPin, HIGH);
+  digitalWrite(ledRedPin, LOW);
+  delay(1000);
 }
