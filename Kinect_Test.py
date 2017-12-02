@@ -6,12 +6,18 @@ from pykinect.nui import JointId
 
 import itertools
 
-video = numpy.empty((480,640,4),numpy.uint8)
-depth = numpy.empty((240,320,1),numpy.uint16)
+VIDEO_WIDTH = 480
+VIDEO_HEIGHT = 640
+
+DEPTH_WIDTH = 240
+DEPTH_HEIGHT = 320
+
+video = numpy.empty((VIDEO_WIDTH,VIDEO_HEIGHT,4),numpy.uint8)
+depth = numpy.empty((DEPTH_WIDTH,DEPTH_HEIGHT,1),numpy.uint16)
 
 skeletons = None
 
-# skeleton_to_depth_image = nui.SkeletonEngine.skeleton_to_depth_image
+skeleton_to_depth_image = nui.SkeletonEngine.skeleton_to_depth_image
 
 SKELETON_COLORS = [(255,0,0),
                    (0,0,255),
@@ -49,11 +55,10 @@ SPINE = (JointId.HipCenter,
 def draw(skeletons, video):
     # print("Draw")
     for index, data in enumerate(skeletons):
-        print("Skele")
+        # print("Skele")
         # draw the Head
         HeadPos = data.SkeletonPositions[JointId.Head] 
         draw_skeleton_data(video, data, index, SPINE, 10)
-        # pygame.draw.circle(screen, SKELETON_COLORS[index], (int(HeadPos[0]), int(HeadPos[1])), 20, 0)
     
         # drawing the limbs
         draw_skeleton_data(video, data, index, LEFT_ARM)
@@ -77,6 +82,8 @@ def draw_skeleton_data(video, pSkelton, index, positions, width = 4):
     #print(start)
     for position in itertools.islice(positions, 1, None):
         next = pSkelton.SkeletonPositions[position.value]
+
+        ##################################
         
         curstart = start
         curend = next
@@ -84,7 +91,22 @@ def draw_skeleton_data(video, pSkelton, index, positions, width = 4):
         print(curstart)
 
         cv2.line(video, kinect_to_cv(curstart), kinect_to_cv(curend), SKELETON_COLORS[index], width)
-        # pygame.draw.line(screen, SKELETON_COLORS[index], curstart, curend, width)
+
+
+        ##################################
+
+        #TODO Use depth to make body frame tracking more accurate
+        # Figure out why positions keep coming back as 0
+
+
+        # curstart = skeleton_to_depth_image(start, VIDEO_WIDTH, VIDEO_HEIGHT)
+        # curend = skeleton_to_depth_image(next, VIDEO_WIDTH, VIDEO_HEIGHT)
+
+        # print(curstart)
+
+        # cv2.line(video, (int(curstart[0]), int(curstart[1])), (int(curend[0]), int(curend[1])), SKELETON_COLORS[index], width)
+
+        ##################################
         
         start = next
 
@@ -107,7 +129,7 @@ def video_frame_ready(frame):
 
 
 def post_frame(frame):
-    print("Boop")
+    # print("Boop")
     global skeletons
     if len(frame.SkeletonData) > 0:
         skeletons = frame.SkeletonData
